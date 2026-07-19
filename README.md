@@ -90,6 +90,24 @@ Use `"status": "coming-soon"` for teaser cards that don't link yet.
 - [ ] Works when opened under a subpath (`/games/<id>/`)
 - [ ] Entry added to `games.json`
 
+## E2E tests
+
+The Playwright suite checks the hub, campaign navigation, portrait rotate gate,
+landscape layout, touch planting, shooting, damage, sun collection, pause/resume,
+shovel, mute, and responsive viewport bounds.
+
+```bash
+npm install
+npm run install:browsers
+npm run dev
+
+# in another terminal
+npm test
+```
+
+Tested landscape sizes include 568×320, 667×375, 740×360, 844×390,
+and 1024×768. Generated screenshots are written to `e2e-shots/` and ignored by Git.
+
 ## Games
 
 | ID | Title | Notes |

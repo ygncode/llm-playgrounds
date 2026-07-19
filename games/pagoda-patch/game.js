@@ -21,11 +21,11 @@
       cost: 125, hp: 80, cooldown: 12, sunInterval: 7.5, sunAmount: 50,
     },
     peashooter: {
-      id: "peashooter", name: "ပဲပစ် · Pea", emoji: "🟢",
+      id: "peashooter", name: "ပဲပစ် · Pea", emoji: "🌱",
       cost: 100, hp: 100, cooldown: 7.5, fireInterval: 1.4, damage: 20,
     },
     wallnut: {
-      id: "wallnut", name: "ထန်းလုံး · Toddy", emoji: "🥥",
+      id: "wallnut", name: "ထန်းလုံး · Toddy", emoji: "🥜",
       cost: 50, hp: 400, cooldown: 20,
     },
     potatomine: {
@@ -45,7 +45,7 @@
       cost: 175, hp: 100, cooldown: 10, fireInterval: 1.4, damage: 20, slow: true,
     },
     repeater: {
-      id: "repeater", name: "ပဲနှစ်ချက် · Dual", emoji: "💚",
+      id: "repeater", name: "ပဲနှစ်ချက် · Dual", emoji: "🌲",
       cost: 200, hp: 100, cooldown: 10, fireInterval: 1.4, damage: 20, double: true,
     },
     cherrybomb: {
@@ -57,7 +57,7 @@
       cost: 125, hp: 9999, cooldown: 35, fuse: 0.7, blastDamage: 1800, instant: true, aoe: "row",
     },
     tallnut: {
-      id: "tallnut", name: "ထန်းကြီး · Tall", emoji: "🧱",
+      id: "tallnut", name: "ထန်းကြီး · Tall", emoji: "🪵",
       cost: 125, hp: 800, cooldown: 25, blockLeap: true,
     },
     starfruit: {
@@ -70,17 +70,17 @@
   // ZOMBIES
   // ═══════════════════════════════════════════════════════════
   const ZOMBIE_TYPES = {
-    basic:   { hp: 100, speed: 17, damage: 20, eatInterval: 0.9, score: 10 },
-    flag:    { hp: 100, speed: 26, damage: 20, eatInterval: 0.85, score: 15 },
-    cone:    { hp: 280, speed: 16, damage: 20, eatInterval: 0.9, score: 25 },
-    bucket:  { hp: 550, speed: 14, damage: 25, eatInterval: 0.85, score: 50 },
-    newspaper: { hp: 200, speed: 15, damage: 20, eatInterval: 0.85, score: 30, enrageAt: 0.45, enrageSpeed: 38 },
-    runner:  { hp: 80,  speed: 42, damage: 30, eatInterval: 0.7, score: 20 },
-    door:    { hp: 450, speed: 13, damage: 20, eatInterval: 0.9, score: 40 },
-    dancer:  { hp: 220, speed: 16, damage: 20, eatInterval: 0.9, score: 45, summon: true },
-    balloon: { hp: 140, speed: 22, damage: 20, eatInterval: 0.9, score: 35, flying: true },
-    giant:   { hp: 1400, speed: 9, damage: 50, eatInterval: 0.7, score: 120, smash: true },
-    boss:    { hp: 5000, speed: 4, damage: 80, eatInterval: 0.6, score: 500, isBoss: true },
+    basic:   { hp: 100, speed: 17, damage: 20, eatInterval: 0.9, score: 10, emoji: "🧟" },
+    flag:    { hp: 100, speed: 26, damage: 20, eatInterval: 0.85, score: 15, emoji: "🏴‍☠️" },
+    cone:    { hp: 280, speed: 16, damage: 20, eatInterval: 0.9, score: 25, emoji: "🚧" },
+    bucket:  { hp: 550, speed: 14, damage: 25, eatInterval: 0.85, score: 50, emoji: "🪣" },
+    newspaper: { hp: 200, speed: 15, damage: 20, eatInterval: 0.85, score: 30, enrageAt: 0.45, enrageSpeed: 38, emoji: "📰" },
+    runner:  { hp: 80,  speed: 42, damage: 30, eatInterval: 0.7, score: 20, emoji: "🏃" },
+    door:    { hp: 450, speed: 13, damage: 20, eatInterval: 0.9, score: 40, emoji: "🚪" },
+    dancer:  { hp: 220, speed: 16, damage: 20, eatInterval: 0.9, score: 45, summon: true, emoji: "💃" },
+    balloon: { hp: 140, speed: 22, damage: 20, eatInterval: 0.9, score: 35, flying: true, emoji: "🎈" },
+    giant:   { hp: 1400, speed: 9, damage: 50, eatInterval: 0.7, score: 120, smash: true, emoji: "👹" },
+    boss:    { hp: 5000, speed: 4, damage: 80, eatInterval: 0.6, score: 500, isBoss: true, emoji: "🤖" },
   };
 
   // ═══════════════════════════════════════════════════════════
@@ -947,7 +947,7 @@
     const el = document.createElement("div");
     el.className = `plant ${type}`;
     if (def.mine) el.classList.add("arming");
-    el.innerHTML = `<div class="sprite"></div><div class="hp-bar"><div class="hp-fill" style="width:100%"></div></div>`;
+    el.innerHTML = `<div class="sprite" aria-hidden="true">${def.emoji}</div><div class="hp-bar"><div class="hp-fill" style="width:100%"></div></div>`;
     positionEntity(el, colToX(col), rowToY(row));
     els.entities.appendChild(el);
 
@@ -1195,7 +1195,8 @@
     if (def.flying) cls += " flying";
     if (def.isBoss) cls += " boss";
     el.className = cls;
-    el.innerHTML = `<div class="hp-bar"><div class="hp-fill" style="width:100%"></div></div><div class="sprite"></div>`;
+    const zEmoji = def.emoji || "🧟";
+    el.innerHTML = `<div class="hp-bar"><div class="hp-fill" style="width:100%"></div></div><div class="sprite" aria-hidden="true">${zEmoji}</div>`;
     const x = lawnW + (def.isBoss ? 60 : 40);
     positionEntity(el, x, rowToY(row));
     els.entities.appendChild(el);
@@ -1296,7 +1297,7 @@
               const def = ZOMBIE_TYPES.basic;
               const el = document.createElement("div");
               el.className = "zombie basic backup";
-              el.innerHTML = `<div class="hp-bar"><div class="hp-fill" style="width:100%"></div></div><div class="sprite"></div>`;
+              el.innerHTML = `<div class="hp-bar"><div class="hp-fill" style="width:100%"></div></div><div class="sprite" aria-hidden="true">🧟</div>`;
               const x = z.x + 30;
               positionEntity(el, x, rowToY(r));
               els.entities.appendChild(el);
@@ -1394,9 +1395,11 @@
     for (let r = 0; r < ROWS; r++) {
       const el = document.createElement("div");
       el.className = "mow";
-      el.style.top = `${rowToY(r, 0)}px`;
+      el.innerHTML = `<span class="mow-icon">🚜</span>`;
       els.entities.appendChild(el);
-      state.mowers.push({ row: r, used: false, active: false, x: -10, el });
+      const m = { row: r, used: false, active: false, x: 0, el };
+      state.mowers.push(m);
+      positionEntity(el, m.x, rowToY(r));
     }
   }
 
@@ -1405,12 +1408,12 @@
     mower.active = true;
     mower.used = true;
     state.mowerUsed = true;
-    mower.x = -10;
     mower.el.classList.add("active");
     sfx.mow();
-    const { lawnW } = cellSize();
+    const { lawnW, w } = cellSize();
+    mower.x = w * 0.1;
     const duration = 1.6;
-    const speed = (lawnW + 120) / duration;
+    const speed = (lawnW + 80) / duration;
     let elapsed = 0;
     const tick = (ts) => {
       if (!mower._last) mower._last = ts;
@@ -1419,7 +1422,7 @@
       if (!state.running && !state.lost) { mower.el.remove(); return; }
       elapsed += dt;
       mower.x += speed * dt;
-      mower.el.style.left = `${mower.x}px`;
+      positionEntity(mower.el, mower.x, rowToY(mower.row));
       mower.el.style.transition = "none";
       for (const z of [...state.zombies]) {
         if (z.row === mower.row && z.x < mower.x + 50 && !z.isBoss) killZombie(z);
@@ -1759,21 +1762,26 @@
       return;
     }
     const { w, h } = cellSize();
-    if (el.classList.contains("mow") && !el.classList.contains("active")) {
-      el.style.left = `-10px`;
-      el.style.top = `${y - h / 2 + 4}px`;
-      el.style.height = `${Math.max(18, h - 10)}px`;
+
+    // Mowers live in a gutter LEFT of the plantable grid (classic PvZ strip)
+    if (el.classList.contains("mow")) {
+      const mw = Math.max(24, Math.min(42, w * 0.4));
+      const mh = Math.max(24, Math.min(42, h * 0.44));
+      el.style.width = `${mw}px`;
+      el.style.height = `${mh}px`;
+      el.style.left = el.classList.contains("active")
+        ? `${x - mw / 2}px`
+        : `${-mw - 4}px`;
+      el.style.top = `${y - mh / 2}px`;
       return;
     }
+
     const ew = el.classList.contains("zombie")
-      ? (el.classList.contains("boss") ? w * 1.3 : el.classList.contains("giant") ? w * 1.1 : w * 0.85)
+      ? (el.classList.contains("boss") ? w * 1.15 : el.classList.contains("giant") ? w * 1.05 : w * 0.8)
       : w;
     const eh = h;
-    // Keep CSS box in sync with fluid cell size
-    if (el.classList.contains("plant") || el.classList.contains("zombie")) {
-      el.style.width = `${ew}px`;
-      el.style.height = `${eh}px`;
-    }
+    el.style.width = `${ew}px`;
+    el.style.height = `${eh}px`;
     el.style.left = `${x - ew / 2}px`;
     el.style.top = `${y - eh / 2}px`;
   }

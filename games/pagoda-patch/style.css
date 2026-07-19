@@ -255,59 +255,20 @@ body.need-landscape #app > .overlay { visibility: hidden; pointer-events: none; 
   50% { transform: scale(1.15); }
 }
 
-/* Mini CSS sprites for start screen */
+/* Start screen characters (emoji — crisp at any size) */
 .peashooter-art, .zombie-art {
   width: 72px;
-  height: 80px;
-  position: relative;
+  height: 72px;
+  display: grid;
+  place-items: center;
+  font-size: 3rem;
+  filter: drop-shadow(0 4px 0 rgba(0,0,0,.15));
+  animation: bob 2.4s ease-in-out infinite;
 }
-.peashooter-art::before {
-  content: "";
-  position: absolute;
-  bottom: 8px; left: 50%;
-  transform: translateX(-50%);
-  width: 28px; height: 36px;
-  background: #4caf50;
-  border-radius: 40% 40% 30% 30%;
-  box-shadow: inset -4px -4px 0 rgba(0,0,0,.12);
-}
-.peashooter-art::after {
-  content: "";
-  position: absolute;
-  top: 10px; left: 50%;
-  transform: translateX(-42%);
-  width: 48px; height: 42px;
-  background: #66bb6a;
-  border-radius: 50% 55% 45% 50%;
-  box-shadow:
-    inset -6px -4px 0 rgba(0,0,0,.1),
-    18px 8px 0 -10px #4caf50,
-    28px 10px 0 -12px #388e3c;
-}
-.zombie-art::before {
-  content: "";
-  position: absolute;
-  bottom: 6px; left: 50%;
-  transform: translateX(-50%);
-  width: 34px; height: 42px;
-  background: #6b7b4a;
-  border-radius: 8px 8px 4px 4px;
-  box-shadow: inset -4px 0 0 rgba(0,0,0,.15);
-}
-.zombie-art::after {
-  content: "";
-  position: absolute;
-  top: 4px; left: 50%;
-  transform: translateX(-50%);
-  width: 44px; height: 44px;
-  background: #8fa86a;
-  border-radius: 42% 42% 38% 38%;
-  box-shadow:
-    inset -5px -3px 0 rgba(0,0,0,.12),
-    8px 14px 0 -14px #2a2a2a,
-    -8px 14px 0 -14px #2a2a2a,
-    0 22px 0 -16px #c44;
-}
+.peashooter-art::before { content: "🌱"; font-size: 3rem; }
+.zombie-art::before { content: "🧟"; font-size: 3rem; }
+.peashooter-art::after, .zombie-art::after { content: none; display: none; }
+.zombie-art { animation-delay: 0.35s; }
 
 .how-to {
   text-align: left;
@@ -391,6 +352,10 @@ body.need-landscape #app > .overlay { visibility: hidden; pointer-events: none; 
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  width: 100%;
+  max-width: 100vw;
+  min-width: 0;
+  overflow: hidden;
   padding: 0.55rem 0.9rem;
   background: linear-gradient(180deg, #6b1e18 0%, #3d0e0c 100%);
   border-bottom: 4px solid var(--gold);
@@ -402,8 +367,9 @@ body.need-landscape #app > .overlay { visibility: hidden; pointer-events: none; 
   display: flex;
   align-items: center;
   gap: 0.45rem;
-  margin-left: auto;
-  flex-shrink: 0;
+  margin-left: 0;
+  flex: 0 0 auto;
+  min-width: 0;
 }
 
 .sun-bank {
@@ -442,10 +408,18 @@ body.need-landscape #app > .overlay { visibility: hidden; pointer-events: none; 
 .seed-bar {
   display: flex;
   gap: 0.45rem;
-  flex: 1;
+  flex: 1 1 0;
+  width: 0;
+  min-width: 0;
+  max-width: 100%;
   overflow-x: auto;
+  overflow-y: hidden;
   padding: 0.15rem 0;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
 }
+.seed-bar::-webkit-scrollbar { display: none; }
 
 .seed-packet {
   position: relative;
@@ -1095,28 +1069,32 @@ body.need-landscape #app > .overlay { visibility: hidden; pointer-events: none; 
 
 .mow {
   position: absolute;
-  left: -20px;
-  width: 70px;
-  height: calc(var(--row-h) - 16px);
-  margin-top: 8px;
-  background: linear-gradient(180deg, #ef5350, #c62828);
-  border-radius: 8px 20px 20px 8px;
-  z-index: 22;
+  z-index: 14;
   display: grid;
   place-items: center;
-  font-size: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,.4);
-  animation: mow-ready 1.5s ease-in-out infinite;
-  transition: left 1.8s linear;
+  background: linear-gradient(160deg, #cfd8dc, #78909c 55%, #546e7a);
+  border: 2px solid #37474f;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.35);
+  animation: mow-ready 1.6s ease-in-out infinite;
+  pointer-events: none;
 }
-.mow::after { content: "🪓"; }
+.mow .mow-icon {
+  font-size: clamp(0.75rem, calc(var(--col-w) * 0.28), 1.25rem);
+  line-height: 1;
+  filter: drop-shadow(0 1px 0 rgba(0,0,0,.25));
+}
+.mow::after { content: none; }
 .mow.active {
   animation: none;
-  transition: left 1.8s linear;
+  background: linear-gradient(160deg, #ff8a65, #e53935 60%, #b71c1c);
+  border-color: #4a0000;
+  z-index: 24;
+  box-shadow: 0 0 12px rgba(229, 57, 53, 0.55), 0 2px 6px rgba(0,0,0,.4);
 }
 @keyframes mow-ready {
   0%, 100% { transform: translateX(0); }
-  50% { transform: translateX(4px); }
+  50% { transform: translateX(3px); }
 }
 
 .float-text {
@@ -2232,3 +2210,59 @@ body.shovel-cursor { cursor: crosshair; }
     padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
   }
 }
+
+
+/* ========== Emoji sprite system (reliable mobile scaling) ========== */
+.plant .sprite {
+  width: 86% !important;
+  height: 86% !important;
+  display: grid !important;
+  place-items: center !important;
+  font-size: clamp(1.1rem, calc(var(--col-w) * 0.58), 3.4rem) !important;
+  line-height: 1 !important;
+  background: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  clip-path: none !important;
+  filter: drop-shadow(0 2px 2px rgba(0,0,0,.28));
+  animation: plant-idle 2.2s ease-in-out infinite;
+}
+.plant .sprite::before,
+.plant .sprite::after {
+  content: none !important;
+  display: none !important;
+  box-shadow: none !important;
+  background: none !important;
+}
+.plant.arming .sprite { opacity: 0.45; filter: grayscale(0.5) drop-shadow(0 2px 2px rgba(0,0,0,.2)); }
+.plant.armed .sprite { animation: mine-pulse 0.9s ease-in-out infinite; }
+.plant.cherrybomb .sprite,
+.plant.jalapeno .sprite { animation: cherry-fuse 0.4s ease-in-out infinite; }
+
+.zombie .sprite {
+  width: 90% !important;
+  height: 90% !important;
+  display: grid !important;
+  place-items: center !important;
+  font-size: clamp(1.2rem, calc(var(--col-w) * 0.62), 3.6rem) !important;
+  line-height: 1 !important;
+  background: none !important;
+  filter: drop-shadow(0 3px 2px rgba(0,0,0,.3));
+  animation: zombie-walk 0.7s ease-in-out infinite;
+}
+.zombie .sprite::before,
+.zombie .sprite::after {
+  content: none !important;
+  display: none !important;
+  box-shadow: none !important;
+  background: none !important;
+}
+.zombie.flying .sprite { animation: balloon-float 1.2s ease-in-out infinite; }
+.zombie.eating .sprite { animation: zombie-eat 0.35s ease-in-out infinite; }
+.zombie.boss .sprite { font-size: clamp(1.6rem, calc(var(--col-w) * 0.8), 4.2rem) !important; }
+.zombie.giant .sprite { font-size: clamp(1.5rem, calc(var(--col-w) * 0.72), 4rem) !important; }
+.zombie.enraged .sprite { filter: drop-shadow(0 0 6px #ff1744) hue-rotate(-20deg); }
+
+/* Keep plantable first column clear — mowers are tiny edge badges */
+.lawn-wrap { overflow: visible; }
+.entities { overflow: visible; }

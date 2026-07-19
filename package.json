@@ -1,0 +1,25 @@
+{
+  "name": "ygn-arcade",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A multi-game browser arcade hosted on GitHub Pages.",
+  "type": "module",
+  "scripts": {
+    "dev": "serve . -l 3000",
+    "test": "npm run test:e2e",
+    "test:e2e": "npm run test:e2e:layout && npm run test:e2e:gameplay",
+    "test:e2e:layout": "node tests/e2e/layout.mjs",
+    "test:e2e:gameplay": "node tests/e2e/gameplay.mjs",
+    "install:browsers": "playwright install chromium"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ygncode/llm-playgrounds.git"
+  },
+  "homepage": "https://ygncode.github.io/llm-playgrounds/",
+  "license": "MIT",
+  "devDependencies": {
+    "playwright": "^1.55.0",
+    "serve": "^14.2.4"
+  }
+}

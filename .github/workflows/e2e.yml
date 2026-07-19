@@ -1,0 +1,44 @@
+name: Browser E2E
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  pagoda-patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+
+      - name: Start static server
+        run: |
+          npm run dev > /tmp/ygn-arcade-serve.log 2>&1 &
+          for i in {1..30}; do
+            curl --fail --silent http://localhost:3000/games/pagoda-patch/ >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/ygn-arcade-serve.log
+          exit 1
+
+      - name: Run responsive and gameplay tests
+        run: npm test
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pagoda-patch-e2e-screenshots
+          path: e2e-shots/
+          if-no-files-found: ignore
+          retention-days: 7

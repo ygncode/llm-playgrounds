@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YGN Arcade — Browser Games</title>
+  <meta name="description" content="A collection of free browser games. No install. Just play." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Lilita+One&family=Padauk:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="hub.css" />
+</head>
+<body>
+  <div class="bg-orbs" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <a class="brand" href="./">
+      <span class="brand-mark">🎮</span>
+      <span class="brand-text">
+        <strong>YGN Arcade</strong>
+        <small>browser games · free forever</small>
+      </span>
+    </a>
+    <nav class="nav">
+      <a href="#games">Games</a>
+      <a href="#about">About</a>
+      <a href="https://github.com/" id="github-link" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <p class="eyebrow">Open-source · runs in your browser</p>
+      <h1>Play something<br/><span class="gold">weird &amp; wonderful</span></h1>
+      <p class="lede">
+        A growing shelf of small games. Click a card, no downloads,
+        no accounts — just chaos (the fun kind).
+      </p>
+      <a class="cta" href="#games">Browse games ↓</a>
+    </section>
+
+    <section id="games" class="games-section">
+      <div class="section-head">
+        <h2>Games</h2>
+        <p id="game-count" class="count"></p>
+      </div>
+      <div id="game-grid" class="game-grid">
+        <!-- filled by hub.js from games.json -->
+      </div>
+    </section>
+
+    <section id="about" class="about-section">
+      <div class="about-card">
+        <h2>About this shelf</h2>
+        <p>
+          Each game lives in its own folder under <code>games/</code>.
+          Add a new one, register it in <code>games.json</code>, and it
+          shows up here automatically.
+        </p>
+        <pre class="tree" aria-label="Project structure">ygn-arcade/
+├── index.html          ← you are here (hub)
+├── hub.css / hub.js
+├── games.json          ← catalog
+└── games/
+    ├── pagoda-patch/   ← game #1
+    └── your-game/      ← drop new games here</pre>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Made for fun · Hosted on GitHub Pages</p>
+    <p class="mm">ကစားကြမယ် ✨</p>
+  </footer>
+
+  <script src="hub.js"></script>
+</body>
+</html>

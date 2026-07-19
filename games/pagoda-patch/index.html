@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ခြံစောင့် — Pagoda Patch</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Lilita+One&family=Padauk:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="burma">
+  <div id="app">
+    <!-- ===== Title ===== -->
+    <section id="start-screen" class="screen active">
+      <div class="sky-drift"></div>
+      <div class="pagoda-silhouette" aria-hidden="true"></div>
+      <div class="start-card lacquer">
+        <div class="logo">
+          <span class="logo-leaf">🛕</span>
+          <p class="logo-mm">ခြံစောင့်</p>
+          <h1>Pagoda<br/>Patch</h1>
+          <p class="tagline">zombie တွေ ဘုရားခြံကို ချိုးဖောက်လာပြီ</p>
+        </div>
+        <div class="start-art" aria-hidden="true">
+          <div class="art-plant peashooter-art"></div>
+          <div class="art-vs">ဗိုလ်</div>
+          <div class="art-zombie zombie-art"></div>
+        </div>
+        <button id="btn-start" class="btn primary big">ကစားမယ် · Play</button>
+        <button id="btn-endless" class="btn big">အဆုံးမဲ့ · Endless</button>
+        <button id="btn-mute-menu" class="btn ghost mute-menu" title="Toggle sound">🔊 အသံ On</button>
+        <a class="hub-link" href="../../">← YGN Arcade</a>
+        <div class="how-to">
+          <h3>ကစားနည်း · How to Play</h3>
+          <ul>
+            <li><strong>နေရောင်</strong> (sun) ကောက် · အပင်စိုက် · ခုခံပါ</li>
+            <li>အဆင့်တိုင်းမှာ <strong>ထူးခြားတဲ့ စိန်ခေါ်မှု</strong> ရှိတယ်</li>
+            <li>★ ရမှ နောက်မြေပုံ ဖွင့်မယ်</li>
+            <li><strong>1–9</strong> seeds · <strong>S</strong> shovel · <strong>Esc</strong> pause</li>
+          </ul>
+        </div>
+        <p class="save-hint" id="save-hint"></p>
+      </div>
+    </section>
+
+    <!-- ===== Level Map ===== -->
+    <section id="map-screen" class="screen">
+      <div class="map-bg">
+        <div class="map-header">
+          <button id="btn-map-back" class="btn ghost">← ပြန်</button>
+          <h2 class="map-title">မြန်မာမြေပုံ</h2>
+          <div class="map-stars" title="Total stars">★ <span id="total-stars">0</span></div>
+        </div>
+        <div class="map-path" id="map-path"></div>
+        <p class="map-tip">ဘုရားခြံကနေ နတ်ဘုရား zombie အထိ — ခရီးဆက်ပါ</p>
+      </div>
+    </section>
+
+    <!-- ===== Level Intro ===== -->
+    <div id="intro-overlay" class="overlay hidden">
+      <div class="modal intro-modal lacquer">
+        <div id="intro-emoji" class="end-emoji">🌻</div>
+        <p class="intro-level" id="intro-level">Level 1</p>
+        <h2 id="intro-title">ရန်ကုန်ခြံ</h2>
+        <p id="intro-desc" class="intro-desc">A quiet lawn. Too quiet.</p>
+        <div id="intro-mod" class="intro-mod"></div>
+        <div id="intro-plants" class="intro-plants"></div>
+        <button id="btn-intro-go" class="btn primary big">စလိုက်ရအောင် · Go!</button>
+        <button id="btn-intro-back" class="btn ghost">မြေပုံသို့</button>
+      </div>
+    </div>
+
+    <!-- ===== Game ===== -->
+    <section id="game-screen" class="screen">
+      <header class="hud">
+        <div class="sun-bank" id="sun-bank" title="နေရောင် · Sun">
+          <div class="sun-icon">☀</div>
+          <span id="sun-count">50</span>
+        </div>
+        <div class="seed-bar" id="seed-bar"></div>
+        <div class="conveyor hidden" id="conveyor" title="အခမဲ့အပင် · Free plants">
+          <div class="conveyor-track" id="conveyor-track"></div>
+        </div>
+        <div class="wave-info">
+          <span class="wave-label">လှိုင်း</span>
+          <span id="wave-count">1</span>
+          <span class="wave-sep">/</span>
+          <span id="wave-total">5</span>
+        </div>
+        <div class="level-chip" id="level-chip">L1</div>
+        <button id="btn-mute" class="btn ghost btn-mute" title="Mute">🔊</button>
+        <button id="btn-pause" class="btn ghost" title="Pause">❚❚</button>
+      </header>
+
+      <div class="stage" id="stage">
+        <div class="house pagoda-house" aria-hidden="true">
+          <div class="pagoda-spire"></div>
+          <div class="pagoda-tier t3"></div>
+          <div class="pagoda-tier t2"></div>
+          <div class="pagoda-tier t1"></div>
+          <div class="pagoda-base"></div>
+        </div>
+        <div class="lawn-wrap" id="lawn-wrap">
+          <div id="lawn" class="lawn"></div>
+          <div id="fog" class="fog hidden"></div>
+          <div id="entities" class="entities"></div>
+          <div id="projectiles" class="projectiles"></div>
+          <div id="suns" class="suns-layer"></div>
+          <div id="fx" class="fx-layer"></div>
+          <div id="boss-bar" class="boss-bar hidden">
+            <span class="boss-name" id="boss-name">နတ်ဘုရား ZOMBIE</span>
+            <div class="boss-track"><div id="boss-fill" class="boss-fill"></div></div>
+          </div>
+        </div>
+        <div class="fence bamboo-fence" aria-hidden="true"></div>
+      </div>
+
+      <div id="shovel-slot" class="shovel-slot" title="Remove plant">
+        <span>⛏</span>
+        <small>ရှပ်ဗယ်</small>
+      </div>
+
+      <div id="objective" class="objective"></div>
+
+      <div id="progress" class="progress-bar">
+        <div class="progress-track">
+          <div id="progress-fill" class="progress-fill"></div>
+          <div class="progress-zombie">🧟</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pause -->
+    <div id="pause-overlay" class="overlay hidden">
+      <div class="modal lacquer">
+        <h2>ခဏရပ် · Paused</h2>
+        <p id="pause-hint" class="intro-desc"></p>
+        <button id="btn-resume" class="btn primary">ဆက်ကစား</button>
+        <button id="btn-restart" class="btn">ပြန်စ</button>
+        <button id="btn-menu" class="btn ghost">မြေပုံ</button>
+      </div>
+    </div>
+
+    <!-- End -->
+    <div id="end-overlay" class="overlay hidden">
+      <div class="modal end-modal lacquer">
+        <div id="end-emoji" class="end-emoji">🌻</div>
+        <h2 id="end-title">You Win!</h2>
+        <div id="end-stars" class="end-stars"></div>
+        <p id="end-msg">The garden is safe… for now.</p>
+        <button id="btn-next" class="btn primary">နောက်အဆင့်</button>
+        <button id="btn-again" class="btn">ပြန်ကစား</button>
+        <button id="btn-end-menu" class="btn ghost">မြေပုံ</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="audio.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

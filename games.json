@@ -1,0 +1,27 @@
+{
+  "name": "YGN Arcade",
+  "github": "",
+  "games": [
+    {
+      "id": "pagoda-patch",
+      "title": "Pagoda Patch",
+      "subtitle": "ခြံစောင့်",
+      "emoji": "🛕",
+      "blurb": "Burmese-flavored Plants vs Zombies. Defend the pagoda across 8 twisted levels, then go endless.",
+      "tags": ["tower defense", "campaign", "myanmar"],
+      "cover": "linear-gradient(135deg, #8b1a1a 0%, #c9a227 45%, #1b5e20 100%)",
+      "badge": "New",
+      "status": "live"
+    },
+    {
+      "id": "example-puzzle",
+      "title": "Your Next Game",
+      "subtitle": "placeholder",
+      "emoji": "🧩",
+      "blurb": "Drop a new folder in games/, add an entry here, ship it.",
+      "tags": ["template"],
+      "cover": "linear-gradient(135deg, #37474f, #1a237e)",
+      "status": "coming-soon"
+    }
+  ]
+}

@@ -411,13 +411,130 @@
     return a;
   }
 
+  let layout = { w: 0, h: 0, cell: 0 };
+
   function cellSize() {
     const lawn = els.lawn.getBoundingClientRect();
-    return { w: lawn.width / COLS, h: lawn.height / ROWS, lawnW: lawn.width, lawnH: lawn.height };
+    // Prefer measured lawn; fall back to last fit
+    const lawnW = lawn.width || layout.w;
+    const lawnH = lawn.height || layout.h;
+    return {
+      w: lawnW / COLS,
+      h: lawnH / ROWS,
+      lawnW,
+      lawnH,
+    };
   }
   function colToX(col, frac = 0.5) { return (col + frac) * cellSize().w; }
   function rowToY(row, frac = 0.5) { return (row + frac) * cellSize().h; }
   function xToCol(x) { return clamp(Math.floor(x / cellSize().w), 0, COLS - 1); }
+
+  /** Fit 9×5 lawn into the stage; scale entity coords when size changes. */
+  function fitLayout() {
+    if (!els.stage || !els.lawnWrap || !els.lawn) return;
+
+    const stage = els.stage.getBoundingClientRect();
+    if (stage.width < 40 || stage.height < 40) return;
+
+    const house = document.querySelector(".house, .pagoda-house");
+    const fence = document.querySelector(".fence, .bamboo-fence");
+    const houseW = house && getComputedStyle(house).display !== "none"
+      ? house.getBoundingClientRect().width
+      : 0;
+    const fenceW = fence && getComputedStyle(fence).display !== "none"
+      ? fence.getBoundingClientRect().width
+      : 0;
+
+    const availW = Math.max(80, stage.width - houseW - fenceW - 4);
+    const availH = Math.max(80, stage.height - 4);
+
+    // Nearly-square cells, fully visible
+    let cell = Math.min(availW / COLS, availH / ROWS);
+
+    // Desktop comfort cap / floor
+    const shortMobile = window.matchMedia("(max-height: 520px), (max-width: 900px)").matches;
+    if (!shortMobile) cell = clamp(cell, 56, 96);
+    else cell = Math.max(28, cell);
+
+    const lawnW = cell * COLS;
+    const lawnH = cell * ROWS;
+
+    const prevW = layout.w;
+    const scale = prevW > 0 ? lawnW / prevW : 1;
+
+    els.lawnWrap.style.width = `${lawnW}px`;
+    els.lawnWrap.style.height = `${lawnH}px`;
+    document.documentElement.style.setProperty("--col-w", `${cell}px`);
+    document.documentElement.style.setProperty("--row-h", `${cell}px`);
+
+    layout = { w: lawnW, h: lawnH, cell };
+
+    if (prevW > 0 && Math.abs(scale - 1) > 0.005) {
+      for (const z of state.zombies) z.x *= scale;
+      for (const p of state.peas) {
+        p.x *= scale;
+        p.y *= scale;
+      }
+      for (const s of state.suns) {
+        s.x *= scale;
+        s.y *= scale;
+        s.targetY *= scale;
+        if (!s.collecting && s.el) {
+          s.el.style.left = `${s.x}px`;
+          s.el.style.top = `${s.y}px`;
+        }
+      }
+    }
+
+    // Sync entity box sizes + positions
+    for (const p of state.plants) {
+      p.el.style.width = `${cell}px`;
+      p.el.style.height = `${cell}px`;
+      positionEntity(p.el, colToX(p.col), rowToY(p.row));
+    }
+    for (const z of state.zombies) {
+      const zw = z.isBoss ? cell * 1.3 : z.type === "giant" ? cell * 1.1 : cell * 0.85;
+      z.el.style.width = `${zw}px`;
+      z.el.style.height = `${cell}px`;
+      positionEntity(z.el, z.x, rowToY(z.row));
+    }
+    for (const pea of state.peas) positionEntity(pea.el, pea.x, pea.y, true);
+    for (const m of state.mowers) {
+      if (!m.used && m.el) {
+        m.el.style.height = `${Math.max(20, cell - 12)}px`;
+        positionEntity(m.el, m.x, rowToY(m.row));
+      }
+    }
+  }
+
+  /** Phones in portrait during gameplay → ask to rotate. Menus stay usable. */
+  function updateOrientationGate() {
+    const overlay = document.getElementById("rotate-overlay");
+    if (!overlay) return;
+
+    const portrait = window.matchMedia("(orientation: portrait)").matches;
+    const narrow = Math.min(window.innerWidth, window.innerHeight) <= 700;
+    const playing =
+      els.gameScreen.classList.contains("active") &&
+      !els.startScreen.classList.contains("active");
+
+    // Gate only while the game board is showing
+    const need = portrait && narrow && playing;
+    document.body.classList.toggle("need-landscape", need);
+    overlay.hidden = !need;
+
+    if (!need) {
+      // After rotating back, reflow the board
+      requestAnimationFrame(() => fitLayout());
+    }
+  }
+
+  function tryLockLandscape() {
+    try {
+      const o = screen.orientation;
+      if (o && o.lock) o.lock("landscape").catch(() => {});
+    } catch (_) {}
+  }
 
   function isBlocked(row, col) {
     const b = state.level?.blocked;
@@ -497,6 +614,7 @@
       A()?.stopGroans();
       playThemeMusic("map");
     }
+    updateOrientationGate();
   }
 
   function refreshSaveHint() {
@@ -1642,14 +1760,20 @@
     }
     const { w, h } = cellSize();
     if (el.classList.contains("mow") && !el.classList.contains("active")) {
-      el.style.left = `-20px`;
-      el.style.top = `${y - h / 2 + 8}px`;
+      el.style.left = `-10px`;
+      el.style.top = `${y - h / 2 + 4}px`;
+      el.style.height = `${Math.max(18, h - 10)}px`;
       return;
     }
     const ew = el.classList.contains("zombie")
       ? (el.classList.contains("boss") ? w * 1.3 : el.classList.contains("giant") ? w * 1.1 : w * 0.85)
       : w;
     const eh = h;
+    // Keep CSS box in sync with fluid cell size
+    if (el.classList.contains("plant") || el.classList.contains("zombie")) {
+      el.style.width = `${ew}px`;
+      el.style.height = `${eh}px`;
+    }
     el.style.left = `${x - ew / 2}px`;
     el.style.top = `${y - eh / 2}px`;
   }
@@ -1675,6 +1799,8 @@
     els.pauseOverlay.classList.add("hidden");
     els.endOverlay.classList.add("hidden");
     els.introOverlay.classList.add("hidden");
+    tryLockLandscape();
+    updateOrientationGate();
 
     applyTheme(level.theme);
     playThemeMusic(level.theme || "day");
@@ -1693,9 +1819,13 @@
     els.suns.innerHTML = "";
     els.fx.innerHTML = "";
     els.conveyorTrack.innerHTML = "";
+    layout = { w: 0, h: 0, cell: 0 }; // force fresh fit
 
     requestAnimationFrame(() => {
+      fitLayout();
       initMowers();
+      // second pass after mowers / fonts settle
+      requestAnimationFrame(() => fitLayout());
       state.running = true;
       updateSunUI();
       updateSeedBar();
@@ -1973,18 +2103,31 @@
     }
   });
 
-  window.addEventListener("resize", () => {
-    if (!state.running) return;
-    for (const p of state.plants) positionEntity(p.el, colToX(p.col), rowToY(p.row));
-    for (const z of state.zombies) positionEntity(z.el, z.x, rowToY(z.row));
-    for (const m of state.mowers) {
-      if (!m.used) m.el.style.top = `${rowToY(m.row, 0) - cellSize().h / 2 + 8}px`;
-    }
+  let resizeTick = 0;
+  function onViewportChange() {
+    updateOrientationGate();
+    cancelAnimationFrame(resizeTick);
+    resizeTick = requestAnimationFrame(() => {
+      if (els.gameScreen.classList.contains("active")) fitLayout();
+    });
+  }
+  window.addEventListener("resize", onViewportChange);
+  window.addEventListener("orientationchange", () => {
+    // iOS fires before dimensions settle
+    setTimeout(onViewportChange, 120);
+    setTimeout(onViewportChange, 350);
   });
+  if (screen.orientation) {
+    screen.orientation.addEventListener("change", () => setTimeout(onViewportChange, 80));
+  }
+
+  // Prevent pinch-zoom gestures eating taps on iOS Safari
+  document.addEventListener("gesturestart", (e) => e.preventDefault());
 
   // Boot
   refreshSaveHint();
   syncMuteButtons();
+  updateOrientationGate();
   // Music starts after first user gesture (browser policy)
   const bootAudio = () => {
     ensureAudio();

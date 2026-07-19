@@ -2,7 +2,12 @@
 <html lang="my">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#3d0e0c" />
+  <meta name="screen-orientation" content="landscape" />
   <title>ခြံစောင့် — Pagoda Patch</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -11,6 +16,16 @@
 </head>
 <body class="burma">
   <div id="app">
+    <!-- Portrait lock tip (phones) -->
+    <div id="rotate-overlay" class="rotate-overlay" hidden>
+      <div class="rotate-card">
+        <div class="rotate-icon" aria-hidden="true">📱</div>
+        <h2>ဘေးတိုက် လှည့်ပါ</h2>
+        <p>Rotate your phone <strong>landscape</strong><br/>to defend the pagoda</p>
+        <p class="rotate-hint">ကစားရန် ဖုန်းကို အလျားလိုက် လှည့်ပါ</p>
+      </div>
+    </div>
+
     <!-- ===== Title ===== -->
     <section id="start-screen" class="screen active">
       <div class="sky-drift"></div>
@@ -82,15 +97,17 @@
         <div class="conveyor hidden" id="conveyor" title="အခမဲ့အပင် · Free plants">
           <div class="conveyor-track" id="conveyor-track"></div>
         </div>
-        <div class="wave-info">
-          <span class="wave-label">လှိုင်း</span>
-          <span id="wave-count">1</span>
-          <span class="wave-sep">/</span>
-          <span id="wave-total">5</span>
+        <div class="hud-right">
+          <div class="wave-info">
+            <span class="wave-label">လှိုင်း</span>
+            <span id="wave-count">1</span>
+            <span class="wave-sep">/</span>
+            <span id="wave-total">5</span>
+          </div>
+          <div class="level-chip" id="level-chip">L1</div>
+          <button id="btn-mute" class="btn ghost btn-mute" title="Mute">🔊</button>
+          <button id="btn-pause" class="btn ghost" title="Pause">❚❚</button>
         </div>
-        <div class="level-chip" id="level-chip">L1</div>
-        <button id="btn-mute" class="btn ghost btn-mute" title="Mute">🔊</button>
-        <button id="btn-pause" class="btn ghost" title="Pause">❚❚</button>
       </header>
 
       <div class="stage" id="stage">

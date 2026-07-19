@@ -33,18 +33,23 @@ body.burma {
 
 html, body {
   height: 100%;
+  height: 100dvh;
   overflow: hidden;
   font-family: "Fredoka", system-ui, sans-serif;
   color: var(--ink);
   background: #1a1208;
   user-select: none;
   -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
+  overscroll-behavior: none;
 }
 
 #app {
   position: relative;
   width: 100%;
   height: 100%;
+  height: 100dvh;
   display: grid;
   place-items: center;
 }
@@ -53,8 +58,63 @@ html, body {
   display: none;
   width: 100%;
   height: 100%;
+  height: 100dvh;
 }
 .screen.active { display: flex; flex-direction: column; }
+
+/* ----- Rotate to landscape (phones in portrait) ----- */
+.rotate-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background:
+    radial-gradient(ellipse at 50% 30%, rgba(201, 162, 39, 0.2), transparent 55%),
+    rgba(12, 6, 4, 0.94);
+  backdrop-filter: blur(8px);
+}
+.rotate-overlay[hidden] { display: none !important; }
+body.need-landscape .rotate-overlay { display: flex; }
+body.need-landscape #app > .screen,
+body.need-landscape #app > .overlay { visibility: hidden; pointer-events: none; }
+
+.rotate-card {
+  text-align: center;
+  color: var(--cream);
+  max-width: 300px;
+}
+.rotate-icon {
+  font-size: 4rem;
+  display: inline-block;
+  animation: rotate-phone 1.6s ease-in-out infinite;
+  filter: drop-shadow(0 8px 16px rgba(0,0,0,.4));
+  margin-bottom: 0.8rem;
+}
+@keyframes rotate-phone {
+  0%, 100% { transform: rotate(0deg); }
+  40% { transform: rotate(90deg); }
+  60% { transform: rotate(90deg); }
+}
+.rotate-card h2 {
+  font-family: "Padauk", "Lilita One", sans-serif;
+  font-size: 1.6rem;
+  color: var(--gold);
+  margin-bottom: 0.5rem;
+}
+.rotate-card p {
+  color: #e8d4b0;
+  font-size: 1rem;
+  line-height: 1.45;
+}
+.rotate-hint {
+  margin-top: 0.75rem;
+  font-family: "Padauk", sans-serif;
+  font-size: 0.95rem !important;
+  color: rgba(255, 214, 120, 0.85) !important;
+}
 
 /* ---------- Start Screen ---------- */
 #start-screen {
@@ -338,6 +398,13 @@ html, body {
   z-index: 20;
   flex-shrink: 0;
 }
+.hud-right {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-left: auto;
+  flex-shrink: 0;
+}
 
 .sun-bank {
   display: flex;
@@ -588,8 +655,9 @@ html, body {
   width: calc(var(--cols) * var(--col-w));
   height: calc(var(--rows) * var(--row-h));
   max-width: 100%;
+  max-height: 100%;
   align-self: center;
-  flex-shrink: 1;
+  flex: 0 0 auto;
 }
 
 .lawn {
@@ -678,6 +746,7 @@ html, body {
   pointer-events: none;
   z-index: 12;
   transition: filter 0.1s;
+  /* size also set inline by layout engine for fluid cells */
 }
 .plant .sprite {
   width: 70%;
@@ -1915,32 +1984,251 @@ body.shovel-cursor { cursor: crosshair; }
 }
 .btn.hidden { display: none !important; }
 
-/* Responsive */
-@media (max-width: 900px) {
+/* ========== Responsive / Landscape-first mobile ========== */
+
+/* Tablet-ish */
+@media (max-width: 1100px) {
   :root {
-    --row-h: 70px;
-    --col-w: 70px;
+    --row-h: 76px;
+    --col-w: 76px;
   }
-  .house { width: 48px; }
-  .seed-packet { width: 56px; height: 66px; }
+  .house, .pagoda-house { width: 56px; }
+  .seed-packet { width: 58px; height: 68px; }
   .seed-packet::before { font-size: 1.35rem; }
-  .sun { width: 40px; height: 40px; margin-left: -20px; margin-top: -20px; }
-  .objective { bottom: 40px; font-size: 0.7rem; }
 }
 
-@media (max-width: 640px) {
-  :root {
-    --row-h: 56px;
-    --col-w: 56px;
+/* Phones + short landscape viewports: compact chrome, fluid board via JS */
+@media (max-width: 900px), (max-height: 520px) {
+  #game-screen {
+    height: 100dvh;
+    max-height: 100dvh;
   }
-  .hud { gap: 0.4rem; padding: 0.4rem; }
-  .sun-bank { min-width: 72px; padding-right: 0.5rem; }
-  .sun-icon { width: 34px; height: 34px; font-size: 1.1rem; }
-  #sun-count { font-size: 1.2rem; }
-  .seed-packet { width: 48px; height: 58px; }
-  .house { display: none; }
-  .shovel-slot { width: 52px; height: 58px; right: 8px; bottom: 40px; }
-  .start-card { padding: 1.5rem 1.2rem; }
-  .map-node { padding: 0.7rem 0.8rem; }
-  .conv-item { width: 48px; height: 48px; margin-top: -24px; font-size: 1.25rem; }
+
+  .hud {
+    gap: 0.35rem;
+    padding: 0.28rem 0.4rem;
+    border-bottom-width: 2px;
+  }
+  .hud-right { gap: 0.28rem; }
+
+  .sun-bank {
+    min-width: 0;
+    padding: 0.15rem 0.45rem 0.15rem 0.2rem;
+    border-width: 2px;
+    border-radius: 10px;
+  }
+  .sun-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 0.95rem;
+  }
+  #sun-count { font-size: 1.05rem; }
+
+  .seed-bar {
+    gap: 0.28rem;
+    padding: 0;
+    /* leave room for right cluster */
+    min-width: 0;
+  }
+  .seed-packet {
+    width: 44px;
+    height: 50px;
+    border-width: 2px;
+    border-radius: 8px;
+    box-shadow: 0 2px 0 #1a1008;
+  }
+  .seed-packet::before {
+    font-size: 1.15rem;
+    top: 4px;
+  }
+  .seed-packet .cost {
+    font-size: 0.72rem;
+    padding: 0 4px;
+  }
+
+  .wave-info {
+    padding: 0.2rem 0.4rem;
+    border-radius: 8px;
+    gap: 0.1rem;
+  }
+  .wave-label { font-size: 0.55rem; margin-right: 0.15rem; }
+  #wave-count { font-size: 1rem; }
+  .wave-sep, #wave-total { font-size: 0.75rem; }
+
+  .level-chip {
+    padding: 0.15rem 0.4rem;
+    font-size: 0.8rem;
+    border-radius: 8px;
+  }
+
+  #btn-pause, .btn-mute {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    font-size: 0.75rem;
+  }
+  .btn-mute { font-size: 0.95rem; }
+
+  .stage {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+
+  /* slim decorative sides so lawn gets max space */
+  .house, .pagoda-house {
+    width: 28px;
+    min-width: 28px;
+  }
+  .pagoda-spire { height: 10px; width: 4px; }
+  .pagoda-tier.t3 { width: 14px; height: 8px; }
+  .pagoda-tier.t2 { width: 18px; height: 9px; }
+  .pagoda-tier.t1 { width: 22px; height: 10px; }
+  .pagoda-base { width: 24px; min-height: 18px; }
+  .pagoda-base::after { width: 10px; }
+  .pagoda-tier::after { left: -3px; right: -3px; height: 5px; }
+
+  .fence, .bamboo-fence {
+    width: 12px;
+    min-width: 12px;
+  }
+
+  .shovel-slot {
+    width: 46px;
+    height: 50px;
+    right: 6px;
+    bottom: 28px;
+    border-width: 2px;
+    border-radius: 10px;
+    box-shadow: 0 3px 0 #1a1008;
+    z-index: 40;
+  }
+  .shovel-slot span { font-size: 1.2rem; }
+  .shovel-slot small { font-size: 0.55rem; }
+
+  .objective {
+    bottom: 26px;
+    font-size: 0.62rem;
+    padding: 0.2rem 0.55rem;
+    max-width: min(420px, 70vw);
+    /* don't cover shovel */
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .progress-bar {
+    padding: 0.2rem 0.5rem 0.3rem;
+    border-top-width: 1px;
+  }
+  .progress-track { height: 12px; }
+  .progress-zombie { font-size: 0.9rem; top: -8px; }
+
+  .sun {
+    width: 36px;
+    height: 36px;
+    margin-left: -18px;
+    margin-top: -18px;
+    font-size: 1rem;
+  }
+  .sun.big {
+    width: 42px;
+    height: 42px;
+    margin-left: -21px;
+    margin-top: -21px;
+  }
+
+  .pea { width: 14px; height: 14px; margin-left: -7px; margin-top: -7px; }
+  .boss-bar { top: 4px; width: min(280px, 70%); }
+  .boss-name { font-size: 0.7rem; }
+  .boss-track { height: 10px; }
+
+  .conveyor { height: 54px; border-width: 2px; }
+  .conv-item {
+    width: 42px;
+    height: 42px;
+    margin-top: -21px;
+    font-size: 1.15rem;
+  }
+
+  .modal, .start-card {
+    max-height: min(92dvh, 640px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .start-card { padding: 1.2rem 1rem 1rem; width: min(94vw, 420px); }
+  .map-node { padding: 0.65rem 0.75rem; width: min(340px, 92vw); }
+
+  /* overlays full viewport on mobile */
+  .overlay { padding: 0.5rem; }
+  .overlay .modal { width: min(94vw, 400px); padding: 1.2rem 1rem; }
+}
+
+/* Very short landscape (classic phone landscape ~375x667 → 667x375) */
+@media (orientation: landscape) and (max-height: 430px) {
+  .objective { display: none; }
+  .wave-label { display: none; }
+  .level-chip { display: none; }
+  .house, .pagoda-house { width: 18px; min-width: 18px; }
+  .pagoda-spire, .pagoda-tier, .pagoda-base { display: none; }
+  .fence, .bamboo-fence { width: 8px; min-width: 8px; }
+  .shovel-slot {
+    width: 40px;
+    height: 44px;
+    bottom: 18px;
+    right: 4px;
+  }
+  .seed-packet { width: 40px; height: 46px; }
+  .progress-bar { padding: 0.12rem 0.4rem 0.18rem; }
+  .progress-track { height: 9px; }
+  .hud { padding: 0.18rem 0.3rem; }
+}
+
+/* Tiny phones landscape */
+@media (orientation: landscape) and (max-height: 360px) {
+  .seed-packet { width: 36px; height: 40px; }
+  .seed-packet::before { font-size: 1rem; top: 2px; }
+  .seed-packet .cost { font-size: 0.65rem; }
+  #btn-pause, .btn-mute { width: 32px; height: 32px; }
+  .sun-icon { width: 24px; height: 24px; font-size: 0.85rem; }
+  #sun-count { font-size: 0.95rem; }
+}
+
+/* Portrait phones: menus OK, gameplay asks to rotate */
+@media (orientation: portrait) and (max-width: 700px) {
+  #start-screen,
+  #map-screen {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .start-card {
+    margin: 1rem auto;
+    max-height: none;
+  }
+  .map-bg { padding-bottom: 3rem; }
+}
+
+/* Safe areas (notched phones) */
+@supports (padding: env(safe-area-inset-top)) {
+  .hud {
+    padding-left: max(0.4rem, env(safe-area-inset-left));
+    padding-right: max(0.4rem, env(safe-area-inset-right));
+    padding-top: max(0.28rem, env(safe-area-inset-top));
+  }
+  .progress-bar {
+    padding-bottom: max(0.3rem, env(safe-area-inset-bottom));
+    padding-left: max(0.5rem, env(safe-area-inset-left));
+    padding-right: max(0.5rem, env(safe-area-inset-right));
+  }
+  .shovel-slot {
+    right: max(6px, env(safe-area-inset-right));
+    bottom: max(28px, calc(env(safe-area-inset-bottom) + 20px));
+  }
+  .rotate-overlay {
+    padding-top: max(1.5rem, env(safe-area-inset-top));
+    padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+  }
 }

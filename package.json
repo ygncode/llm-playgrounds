@@ -14,9 +14,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ygncode/llm-playgrounds.git"
+    "url": "git+https://github.com/ygncode/arcades.git"
   },
-  "homepage": "https://ygncode.github.io/llm-playgrounds/",
+  "homepage": "https://ygncode.github.io/arcades/",
   "license": "MIT",
   "devDependencies": {
     "playwright": "^1.55.0",

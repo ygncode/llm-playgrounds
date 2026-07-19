@@ -1,6 +1,6 @@
 {
   "name": "YGN Arcade",
-  "github": "https://github.com/ygncode/llm-playgrounds",
+  "github": "https://github.com/ygncode/arcades",
   "games": [
     {
       "id": "pagoda-patch",
